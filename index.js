@@ -3,6 +3,7 @@ const app = express()
 const request = require('request')
 const wyy = require('./lib/albumInfo_wyy')
 const qq = require('./lib/albumInfo_qq')
+const bandcamp = require('./lib/albumInfo_bandcamp')
 
 app.set('trust proxy', true)
 /**
@@ -93,17 +94,15 @@ app.get('/album/link', (req, res) => {
     } else if (url.includes('open.spotify.com')) {
 
     } else {
-        //bandcamp or other website
-        console.log(url)
-        const proxy = {
-            host: "localhost",
-            port: 7890
-        };
-        url = 'https://templime.bandcamp.com/album/timesurf'
-        request({ url: url, proxy: proxy, timeout: 10000, followRedirect: false }, function (err, res, body) {
-            console.log(body);
+        if (url.includes('?from'))
+            url = url.slice(0, url.indexOf('?from'))
+        bandcamp.getAlbumInfo(url).then(res1 => {
+            console.log(res1);
+            return res.send(res1)
         })
-
+            .catch(err => {
+                return console.log(err)
+            })
     }
 })
 
