@@ -4,6 +4,7 @@ const request = require('request')
 const wyy = require('./lib/albumInfo_wyy')
 const qq = require('./lib/albumInfo_qq')
 const bandcamp = require('./lib/albumInfo_bandcamp')
+const spotify = require('./lib/albumInfo_spotify')
 
 app.set('trust proxy', true)
 /**
@@ -92,12 +93,17 @@ app.get('/album/link', (req, res) => {
             })
         }
     } else if (url.includes('open.spotify.com')) {
-
+        let id = url.slice(url.indexOf("album/") + 6)
+        if (id.includes("?"))
+            id = id.substring(0, id.indexOf("?"))
+        spotify.getAlbumInfo(id).then(res1 => {
+            console.log(res1);
+            res.send(res1)
+        })
     } else {
         if (url.includes('?from'))
             url = url.slice(0, url.indexOf('?from'))
         bandcamp.getAlbumInfo(url).then(res1 => {
-            console.log(res1);
             return res.send(res1)
         })
             .catch(err => {
