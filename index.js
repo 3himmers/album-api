@@ -97,7 +97,6 @@ app.get('/album/link', (req, res) => {
         if (id.includes("?"))
             id = id.substring(0, id.indexOf("?"))
         spotify.getAlbumInfo(id).then(res1 => {
-            console.log(res1);
             res.send(res1)
         })
     } else {
