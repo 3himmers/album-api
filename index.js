@@ -5,6 +5,7 @@ const wyy = require('./lib/albumInfo_wyy')
 const qq = require('./lib/albumInfo_qq')
 const bandcamp = require('./lib/albumInfo_bandcamp')
 const spotify = require('./lib/albumInfo_spotify')
+const { resolve } = require('url')
 
 app.set('trust proxy', true)
 /**
@@ -109,6 +110,57 @@ app.get('/album/link', (req, res) => {
                 return console.log(err)
             })
     }
+})
+
+app.get('/album/searchLink', (req, res) => {
+    let reqName = decodeURI(req.query.name)
+    let reqArtists = decodeURI(req.query.artists)
+    let reqDate = decodeURI(req.query.date)
+    let origin = decodeURI(req.query.origin)
+
+    let p1 = new Promise((resolve, reject) => {
+        if (origin == 'qq') {
+            resolve(0)
+        }
+        qq.searchAlbumLink(reqName, reqArtists, reqDate).then(res1 => {
+            if (res1.code == '0') {
+                resolve(res1.data)
+            }
+            resolve(0)
+        })
+    })
+    let p2 = new Promise((resolve, reject) => {
+        if (origin == 'wyy') {
+            resolve(0)
+        }
+        wyy.searchAlbumLink(req.headers.cookie, req.ip, reqName, reqArtists, reqDate).then(res1 => {
+            if (res1.code == '0') {
+                resolve(res1.data)
+            }
+            resolve(0)
+        })
+    })
+    let p3 = new Promise((resolve, reject) => {
+        if (origin == 'spotify') {
+            resolve(0)
+        }
+        spotify.searchAlbumLink(reqName, reqArtists, reqDate).then(res1 => {
+            if (res1.code == '0') {
+                resolve(res1.data)
+            }
+            resolve(0)
+        })
+    })
+    Promise.allSettled([p1, p2, p3]).then(res2 => {
+        let links = {}
+        if (res2[0].value != 0)
+            links.qq = res2[0].value
+        if (res2[1].value != 0)
+            links.wyy = res2[1].value
+        if (res2[2].value != 0)
+            links.spotify = res2[2].value
+        res.send(links)
+    })
 })
 
 app.listen(3010, () => {
