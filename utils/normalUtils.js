@@ -1,4 +1,3 @@
-
 //includesNotCaseSensitive
 function includesNCS(oneStr, twoStr) {
     return oneStr.toUpperCase().includes(twoStr.toUpperCase());
@@ -6,13 +5,16 @@ function includesNCS(oneStr, twoStr) {
 
 //includesEachotherNotCaseSensitive
 function includesENCS(oneStr, twoStr) {
-    if (oneStr.toUpperCase().includes(twoStr.toUpperCase()) || twoStr.toUpperCase().includes(oneStr.toUpperCase())) {
-        return true
+    if (
+        oneStr.toUpperCase().includes(twoStr.toUpperCase()) ||
+        twoStr.toUpperCase().includes(oneStr.toUpperCase())
+    ) {
+        return true;
     }
-    return false
+    return false;
 }
 
 module.exports = {
     includesNCS,
-    includesENCS
-}
+    includesENCS,
+};
